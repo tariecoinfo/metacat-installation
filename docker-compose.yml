@@ -1,0 +1,41 @@
+version: '3.7'
+services:
+ postgresql:
+    image: ecoim/ecoinformatics:postgresql
+    container_name: postgresql
+    tty: true
+    stdin_open: true 
+    ports:
+      - "3000:5432"
+ 
+ tomcat:
+    image: ecoim/ecoinformatics:tomcat7
+    container_name: tomcat7
+    tty: true
+    stdin_open: true
+    ports:
+      - "8000:8080"  
+    depends_on:
+      - postgresql
+    cap_add:
+      - SYS_PTRACE
+ 
+ openldap:
+    image: ecoim/ecoinformatics:ldap
+    container_name: openldap        
+    ports:
+      - "3890:389"
+      - "6360:636"
+    domainname: "ecoinformatics.org" # important: same as hostname
+    hostname: "ecoinformatics.org"
+
+ phpldapadmin:
+    image: osixia/phpldapadmin:latest
+    container_name: phpldapadmin
+    environment:
+      PHPLDAPADMIN_LDAP_HOSTS: "openldap"
+      PHPLDAPADMIN_HTTPS: "false"
+    ports:
+      - "8081:80"
+    depends_on:
+      - openldap
