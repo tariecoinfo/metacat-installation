@@ -1,74 +1,54 @@
-# **Install Metacat on Unbuntu16.04**
+# **Install Metacat on Unbuntu18.04**
 
 >tested of the following version of metacat and morpho
-   -Metacat: version 1.9.5 and 2.12.3
+   -Metacat: version 2.13.0
    -Morpho: version 1.9.1 and 1.11.0
 
 >I create a folder called install under home which is /home/chin. The install folder includes:
-   -source: all programs need
-   -conf: configuration files
+   -source: all programs needed 
+   -conf: configuration files for installation
    -doc: all scripts like this guide
    -eml: exmpales using eml 1.1.0
 
->Sun JDK 7 has been used.The file has been downloaded as tar.gz.
 
 >Installation start from here.
 
-## **1. Install Java JDK**
->For Ubuntu 16.04 there is no longer a jvm folder in /usr/lib, therefore you need manually create a jvm folder.
+## Install Java
+>For Metacat 2.13.0 you need JDK7 or JDK8. I used open-jdk-8
 
-sudo mkdir /usr/lib/jvm
+sudo apt install openjdk-8-jdk
 
-### Move extracted folder to jvm location.
+### Check Java Installation.
 
-sudo mv jdk1.7.0_80 /usr/lib/jvm/jdk1.7.0_80
+java -version
 
-### Install new java source in system:
-
-sudo update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/jdk1.7.0_80/bin/javac 1
-
-sudo update-alternatives --install /usr/bin/java java /usr/lib/jvm/jdk1.7.0_80/bin/java 1
+### If you have other JAVA installed you can check and change what you want.
 
 ### If you have serveral Java version, you can choose default java using the following commands
 
 sudo update-alternatives --config java
-sudo update-alternatives --config javaws
-
-### java version test:
-
-java -version
-
-### Verify the symlinks all point to the new java location:
-
-ls -la /etc/alternatives/java*
-
-### Enable Java plugin for Mozilla Firefox (even for Chrome)
-
-sudo ln -s /usr/lib/jvm/jdk1.7.0_80/jre/lib/i386/libnpjp2.so /usr/lib/mozilla/plugins
 
 ### JAVA_HOME configuration
-> Some tools require JAVA_HOME variable. You can set JAVA_HOME by editing the file called .bashrc under your home directory.
-> add the following lines: (if .bashrc is hidden, click in Nautilus Menu View > Show Hidden Files)
+> Some tools require JAVA_HOME or JRE_HOME variables. You can set JAVA_HOME by editing the file called .bashrc under your home directory.
+> add the following lines: (if .bashrc is hidden, click in Nautilus Menu View > Show Hidden Files). You need change directory to your home directory. For example. I do this. cd /home/chin, gedit .bashrc.
 
-export JAVA_HOME=/usr/lib/jvm/jdk1.7.0_80
-
+export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
+export JRE_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre
 export PATH=$JAVA_HOME/bin:$PATH
 
+## 2. **Install Tomcat8**
 
-## 2. **Install Tomcat7**
+> apt-get install tomcat8 usuall includes the default java. If you install openjdk first, apt install will just use it. But check after installlation and  use reconfig java to choose any other version. However, if you just use Metacat, then you need only java 8.
 
-> apt-get install tomcat7 will indclude openjdk by default. you can use reconfig java to choose sun jdk. Since metacat 2.X install facing bad gateway from tomcat6 and not supported any more for ubuntu 16.04. you need tomcat7 to work on ubuntu 16.04.
+sudo apt-get install tomcat8
 
-sudo apt-get install tomcat7
-sudo update-alternatives --config java
-
-> the apt-get install of tomcat7 will create folder /var/lib/tomcat7. under tomcat7 there is a folder called conf.
-> you need check server.xml and enable port 8009 to connect apache2 and tomcat7.
+> the apt-get install of tomcat8 will create folder /var/lib/tomcat8. under tomcat8 there is a folder called conf.
+> you need check server.xml and enable port 8009 to connect apache2 and tomcat8.
  >> First to check if AJP 1.3 is open.
- >> You need go to the config file locates in /var/lib/tomcat7/conf/server.xml.
+ >> You need go to the config file locates in /var/lib/tomcat8/conf/server.xml.
  >> Find out prot 8009 and uncomment it.
 
-sudo gedit /var/lib/tomcat7/conf/server.xml
+sudo gedit /var/lib/tomcat8/conf/server.xml
 
 > search prot 8009 and unmarked the connector port as following
   <!-- Define an AJP 1.3 Connector on port 8009 -->
@@ -78,7 +58,7 @@ sudo gedit /var/lib/tomcat7/conf/server.xml
 
 > then restart tomcat
 
-sudo /etc/init.d/tomcat7 restart
+sudo /etc/init.d/tomcat8 restart
 
 ## 3. **Install Apache and Tomcat connector**
 
@@ -102,9 +82,7 @@ sudo apt-get install slapd ldap-utils
 > configure the system first you need load the three schemas (no need to do during installation time)
 
 sudo ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/schema/cosine.ldif
-
 sudo ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/schema/nis.ldif
-
 sudo ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/schema/inetorgperson.ldif
 
 ### check install
@@ -135,54 +113,42 @@ sudo dpkg-reconfigure slapd
 sudo slapcat
 
 ### create layer
-> such as you want have o=TFRI (this file is for TFRI. I edited. you can change to other o=xxxx)
+> such as you want have o=TERN (this file is for Taiwan Ecological Research Netowrk. I edited. you can change to other o=xxxx)
 
-sudo ldapadd -x -D cn=admin,dc=ecoinformatics,dc=org -W -f /home/chin/o=eapilter.ldif
+sudo ldapadd -x -D cn=admin,dc=ecoinformatics,dc=org -W -f /home/chin/o=tern.ldif
 
 > content of the file o=eapilter.ldif as following;
 
 ------------------------------------------------------------------------------------
-dn: o=EAPILTER,dc=ecoinformatics,dc=org
-
-o: EAPILTER
-
+dn: o=TERN,dc=ecoinformatics,dc=org
+o: TERN
 objectClass: organization
-
 objectClass: top
 
 ------------------------------------------------------------------------------------
 
-### add users you want (this adduser.ldif is for o=TFRI, I edited. you can change to what you like)
+### add users you want (this adduser.ldif is for o=TERN, I edited. you can change to what you like)
 
-sudo ldapadd -x -D cn=admin,dc=ecoinformatics,dc=org -W -f /home/chin/adduser_eapilter.ldif
+sudo ldapadd -x -D cn=admin,dc=ecoinformatics,dc=org -W -f /home/chin/adduser_tern.ldif
 
-> content of adduser_EAPILTER.ldif as following;
+> content of adduser_tern.ldif as following;
 
 ------------------------------------------------------------------
-dn: uid=eap,o=EAPILTER,dc=ecoinformatics,dc=org
-
-cn: eap1
-
-sn: eap1
-
-uid: eap
-
+dn: uid=chin,o=TERN,dc=ecoinformatics,dc=org
+cn: cc
+sn: lin
+uid: chin
 userPassword: firelab
-
 objectClass: inetOrgPerson
-
 objectClass: organizationalPerson
-
 objectClass: person
-
 objectClass: uidObject
-
 objectClass: top
 
 -------------------------------------------------------------------
 
 
-# install phpldapadmin for managing ldap
+# install phpldapadmin for managing ldap, if you like gui infterfact to manage ldap server.
 
 sudo apt-get install phpldapadmin
 
@@ -195,13 +161,9 @@ sudo gedit /etc/phpldapadmin/config.php
 
 -------------------------------------------------------------------------------
 in line 293 $servers->setValue('server','host','127.0.0.1');
-
 in line 300 $servers->setValue('server','base',array('dc=ecoinformatics,dc=org'));
-
 in line 318 $servers->setValue('login','bind_id','session');
-
 in 326$servers->setValue('login','bind_id','cn=admin,dc=ecoinformatics,dc=org');
-
 
 -------------------------------------------------------------------------------
 
@@ -214,6 +176,8 @@ in 326$servers->setValue('login','bind_id','cn=admin,dc=ecoinformatics,dc=org');
 sudo apt-get install postgresql pgadmin3
 
 > config file directory is /var/lib/postgresql/9.1/main/pg_hba.conf
+
+> notice the version of postgresql might be different. You need chech it.
 
 ### make Postgresql accessible
 
@@ -232,29 +196,40 @@ CREATE USER metacat with UNENCRYPTED PASSWORD 'tari';
 \q
 exit
 
-### access posgresql server.
+### access posgresql server for gui interface that you can create users too.
 
 sudo pgadmin3
 
-## **6. Install Metacat**
+## **6. Install Solr server**
+> Metacat 2.13.0 needs a seperate Solr server outside Metacat. You need install it before installing Metacat.
+
+> Download and 
+cd /opt 
+sudo wget https://archive.apache.org/dist/lucene/solr/8.4.1/
+sudo tar xzf solr-8.4.1.tgz solr-8.4.1/bin/install_solr_service.sh --strip-components=2
+sudo bash ./install_solr_service.sh solr-8.4.1.tgz
+sudo chmod g+w /etc/default/solr.in.sh
+sudo usermod -a -G solr tomcat8
+sudo usermod -a -G tomcat8 solr
+
+> You can start or stop solr by sudo service solr stop or sudo service solr start
+> You can check if Solr is running by typing http://localhost:8983/solr
+
+## **7. Install Metacat**
 >before you install Metacat, you need make Metacat convext in Apache to let http can access Tomcat6.
 >if you don't have jk.conf and workers.properties. you need to edit it first. you can just use these two files I provide.
 
 ### make apache2 and tomcat connected
 
 sudo cp /home/chin/jk.conf /etc/apache2/mods-available/
-
 sudo cp /home/chin/workers.properties /etc/apache2/workers.properties
 
 > The content of jk.conf
 
 ---------------------------------------------------------
 JkWorkersFile   /etc/apache2/workers.properties
-
 JkLogFile       /var/log/apache2/mod_jk.log
-
 JkShmFile       /var/log/apache2/mod_jk.shm
-
 
 ---------------------------------------------------------
 
@@ -262,19 +237,12 @@ JkShmFile       /var/log/apache2/mod_jk.shm
 
 ---------------------------------------------------------
 workers.tomcat_home=/var/lib/tomcat7
-
 workers.java_home=/usr/lib/jvm/jdk1.7.0_80
-
 worker.list=ajp13
-
 worker.ajp13.port=8009
-
 worker.ajp13.host=localhost
-
 worker.ajp13.type=ajp13
-
 worker.ajp13.lbfactor=1
-
 worker.loadbalancer.type=lb
 
 ----------------------------------------------------------
@@ -289,22 +257,14 @@ sudo gedit /etc/apache2/sites-available/metacat.conf
 *<VirtualHost *:80>
 
         DocumentRoot /var/www/html
-
         ServerName localhost
-
-        JkMount /knb ajp13
-
-        JkMount /knb/* ajp13
-
+        
         JkMount /metacat ajp13
-
         JkMount /metacat/* ajp13
+        JkMount /metacatui ajp13
+        JkMount /metacatui/* ajp13
 
-        JkMount /geoserver ajp13
-
-        JkMount /geoserver/* ajp13
-
-<//VirtualHost>
+</VirtualHost>
 
 ---------------------------------------------------------
 
@@ -314,21 +274,20 @@ sudo gedit /etc/apache2/sites-available/metacat.conf
 > Metacat needs a folder to store files such as raw dataset,logs. So you need create a folder called metacat under /var. During installation this folder need to be able to write (writable). you can change the right of folder after completing installation.
 
 sudo mkdir /var/metacat
-
-sudo chown -R tomcat7:tomcat7 /var/metacat
+sudo chown -R tomcat8:tomcat8 /var/metacat
 
 sudo chmod -R 775 /var/metacat
 
-### enable virtual host and restart apache2 and tomcat7
+### enable virtual host and restart apache2 and tomcat8
 
 sudo a2ensite metacat.conf
-sudo /etc/init.d/tomcat7 restart-
+sudo /etc/init.d/tomcat7 restart
 sudo /etc/init.d/apache2 restart
 
 ### copy .war files to /var/lib/tomcat7/webapps
 
 > metacat bin .war files can be downloaded from https://knb.ecoinformatics.org. the latest version of this writing is 12.12.3.
-> the version 1.9.5 you need knb.war. the version 12.12.3 you need metacat.war, metacatui.war, and metacat-index.war.
+> the version 2.13.0 you need metacat.war, metacatui.war, and metacat-index.war.
 
 sudo cp *.war /var/lib/tomcat7/webapps
 
@@ -343,7 +302,7 @@ sudo cp *.war /var/lib/tomcat7/webapps
 
  2) Authentication Secure URL: ldap://localhost:389/
 
- 3) Metacat Administrators: uid=chin,o=TFRI,dc=ecoinformatics,dc=org
+ 3) Metacat Administrators: uid=chin,o=TERN,dc=ecoinformatics,dc=org
 
  4) after save the first setp. the administroator login shows up, you need type ldap password of metacat administrator that you define in the first step.
 
@@ -352,7 +311,8 @@ sudo cp *.war /var/lib/tomcat7/webapps
    - Authentication Configuration   
    - Skins specfic properties   
    - Database Installation/Upgrade   
-   - Geoserver Configuration   
+   - Solr serach index (choose create)
+   - Geoserver Configuration (choose bypass)  
    - DataOne (choose bypass)
 
 2. Metacat Global Properties
@@ -366,16 +326,15 @@ sudo cp *.war /var/lib/tomcat7/webapps
    - Document file path: this is metacat documents path
    - Temporary file path:for installation backup path
 
-3. Skins Specific Propterties
-   - 1.9.5 choose default
-   - 1.12.12 choose metacatui
+3. Skins Specific Propterties    
+   - 2.13.0 default skin is metacatui
 
 4. Database Install/Upgrade utility
    - you need to make sure database name that JDBC will connect
    - also make shure the path /usr/share/tomcat6/webapps/knb/WEB-INF/sql/xmltables-postgres.sql is correct.
 
 5. Geosever configuration
-   - you can choose update
+   - you can choose bypass
 
 6. DataOne configuration
    - you can just choose bypass
