@@ -1,20 +1,20 @@
 # **Install Metacat on Unbuntu18.04**
 
->tested of the following version of metacat and morpho
+> tested of the following version of metacat and morpho
    -Metacat: version 2.13.0
    -Morpho: version 1.9.1 and 1.11.0
 
->I create a folder called install under home which is /home/chin. The install folder includes:
+> I create a folder called install under home which is /home/chin. The install folder includes:
    -source: all programs needed 
    -conf: configuration files for installation
    -doc: all scripts like this guide
    -eml: exmpales using eml 1.1.0
 
 
->Installation start from here.
+> Installation start from here.
 
 ## Install Java
->For Metacat 2.13.0 you need JDK7 or JDK8. I used open-jdk-8
+> For Metacat 2.13.0 you need JDK7 or JDK8. I used open-jdk-8
 
 sudo apt install openjdk-8-jdk
 
