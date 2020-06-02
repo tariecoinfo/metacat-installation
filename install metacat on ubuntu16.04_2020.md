@@ -22,9 +22,7 @@ sudo apt install openjdk-8-jdk
 
 java -version
 
-### If you have other JAVA installed you can check and change what you want.
-
-### If you have serveral Java version, you can choose default java using the following commands
+### If you have serveral Java versions, you can choose default java using the following commands
 
 sudo update-alternatives --config java
 
@@ -97,10 +95,10 @@ sudo dpkg-reconfigure slapd
 
 ###### 1. Omit OpenLDAP server configuration?--NO
 ###### 2. DNS domain name: --ecoinformatics.org
-###### 3. Organization name:--eapilter
+###### 3. Organization name:--tern
 ###### 4. Administrator passwod
 ###### 5. Confirm password:--firelab
-###### 6. Database backend to use:--HDB
+###### 6. Database backend to use:--MDB
 ###### 7. Do you want the database to be removed when slapd is purged?--yes
 ###### 8. Move old database?--yes
 ###### 9. Allow ldapv2 protocol?--no
