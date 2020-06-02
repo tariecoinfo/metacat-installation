@@ -254,7 +254,8 @@ sudo gedit /etc/apache2/sites-available/metacat.conf
 > The following is the content of httpd.conf (you can add JkMonut context by your own need). Notice ServerName can be changed to fit your own server.
 
 ---------------------------------------------------------
-*<VirtualHost *:80>
+
+<VirtualHost *:80>
 
         DocumentRoot /var/www/html
         ServerName localhost
@@ -265,6 +266,7 @@ sudo gedit /etc/apache2/sites-available/metacat.conf
         JkMount /metacatui/* ajp13
 
 </VirtualHost>
+
 
 ---------------------------------------------------------
 
@@ -359,4 +361,4 @@ Header edit* Set-Cookie "(JSESSIONID=.*)(; HttpOnly)" "$1"
 
 Header edit* Set-Cookie "(JSESSIONID=.*)(; No \'=\')" "$1"   
 
-# *** Enjoy your installation!!***
+# Enjoy your installation!!
