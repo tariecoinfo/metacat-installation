@@ -31,12 +31,14 @@ sudo update-alternatives --config java
 > add the following lines: (if .bashrc is hidden, click in Nautilus Menu View > Show Hidden Files). You need change directory to your home directory. For example. I do this. cd /home/chin, gedit .bashrc.
 
 export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
+
 export JRE_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre
+
 export PATH=$JAVA_HOME/bin:$PATH
 
 ## 2. **Install Tomcat8**
 
-> apt-get install tomcat8 usuall includes the default java. If you install openjdk first, apt install will just use it. But check after installlation and  use reconfig java to choose any other version. However, if you just use Metacat, then you need only java 8.
+> apt-get install tomcat8 usually includes the default java. If you install openjdk first, apt install will just use it. But check after installlation and  use reconfig java to choose any other version. However, if you just use Metacat, then you need only java 8.
 
 sudo apt-get install tomcat8
 
